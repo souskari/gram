@@ -1,0 +1,35 @@
+//LET $K = 2;
+LET $J = -0;
+LET $A = x^$J;
+PRINT $A;
+// comment
+LET $B = 5z^2 + 2x;
+PRINT $A;
+PRINT $B;
+PRINT $B; // 2nd call
+()PRINT $B; // error
+(PRINT($A)); // okay
+($A)PRINT($A); // error
+PRINT $A($A); // error
+LET $C = x;
+PRINT x^($A); // error
+PRINT x^$A; // error
+PRINT (x+(x+(x+(x+(x+(x+(x+x)+x)+x)+x)+x)+x)+x);
+PRINT PRINT; // error
+LET $D = x ++ x; // error
+LET $D = x + @; // error
+LET $D = x / 0; // error
+LET $D = x^-1; // error
+LET $D = x^-1^-1; // error
+LET $F = x^99999999999999999999999999999999; // error
+LET $F = x^1e20; // error
+LET $F = 2^9; // okay
+LET $F = (2^(2^3)); // okay
+$A = 2;
+$A = -(y+1)^2;
+$B = (y-1)^2;
+$A = $A + $B;
+$B = $A - $B;
+$A = $A - $B;
+PRINT $A;
+PRINT $B;
