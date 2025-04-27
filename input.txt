@@ -1,31 +1,36 @@
-//LET $K = 2;
-LET $J = -0;
-LET $A = x^$J;
+PRINT 2x + 5x^3 - 4 + x^2;
+PRINT 3y^2 + 6x^2 - z^2;
+PRINT x^2 + y^3;
+PRINT 3b^3 + 2a^3 - c^3 + 5ab - 2ac + 4bc + a^2 + 10b^2 - c^2 + 7;
+// $K = 2;
+$J = -(x-x);
+$A = x^$J;
 PRINT $A;
 // comment
-LET $B = 5z^2 + 2x;
+ $B = 5z^2 + 2x;
 PRINT $A;
 PRINT $B;
 PRINT $B; // 2nd call
 ()PRINT $B; // error
-(PRINT($A)); // okay
+(PRINT($A)); // error
 ($A)PRINT($A); // error
-PRINT $A($A); // error
-LET $C = x;
+PRINT $A($A); // okay
+ $C = x;
 PRINT x^($A); // error
 PRINT x^$A; // error
 PRINT (x+(x+(x+(x+(x+(x+(x+x)+x)+x)+x)+x)+x)+x);
 PRINT PRINT; // error
-LET $D = x ++ x; // error
-LET $D = x + @; // error
-LET $D = x / 0; // error
-LET $D = x^-1; // error
-LET $D = x^-1^-1; // error
-LET $F = x^99999999999999999999999999999999; // error
-LET $F = x^1e20; // error
-LET $F = 2^9; // okay
-LET $F = (2^(2^3)); // okay
+ $D = x ++ x; // error
+ $D = x + @; // error
+ $D = x / 0; // error
+ $D = x^-1; // error
+ $D = x^-1^-1; // error
+ $F = x^99999999999999999999999999999999; // error
+ $F = x^1e20; // error
+ $F = 2^9; // okay
+ $F = (2^(2^3)); // okay
 $A = 2;
+PRINT $A;
 $A = -(y+1)^2;
 $B = (y-1)^2;
 $A = $A + $B;

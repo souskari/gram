@@ -57,17 +57,17 @@ extern int yydebug;
     NUMBER = 258,                  /* NUMBER  */
     VARIABLE = 259,                /* VARIABLE  */
     USER_VARIABLE = 260,           /* USER_VARIABLE  */
-    LET = 261,                     /* LET  */
-    PRINT = 262,                   /* PRINT  */
-    ADD = 263,                     /* ADD  */
-    SUB = 264,                     /* SUB  */
-    MUL = 265,                     /* MUL  */
-    POW = 266,                     /* POW  */
-    ASSIGN = 267,                  /* ASSIGN  */
-    LPAREN = 268,                  /* LPAREN  */
-    RPAREN = 269,                  /* RPAREN  */
-    SEMICOLON = 270,               /* SEMICOLON  */
-    UNARY_MINUS = 271,             /* UNARY_MINUS  */
+    PRINT = 261,                   /* PRINT  */
+    ADD = 262,                     /* ADD  */
+    SUB = 263,                     /* SUB  */
+    MUL = 264,                     /* MUL  */
+    POW = 265,                     /* POW  */
+    ASSIGN = 266,                  /* ASSIGN  */
+    LPAREN = 267,                  /* LPAREN  */
+    RPAREN = 268,                  /* RPAREN  */
+    SEMICOLON = 269,               /* SEMICOLON  */
+    UNARY_MINUS = 270,             /* UNARY_MINUS  */
+    LEXICAL_ERROR = 271,           /* LEXICAL_ERROR  */
     IMPLICIT_MUL = 272             /* IMPLICIT_MUL  */
   };
   typedef enum yytokentype yytoken_kind_t;
@@ -77,7 +77,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 25 "parser.y"
+#line 26 "parser.y"
 
     Polynomial* poly; //для полинома
     std::string* sval; //для строк (переменные)

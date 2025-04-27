@@ -7,6 +7,7 @@
 
 extern void yyerror(const char *s);
 extern int yylineno;
+extern bool g_was_lexical_error;
 
 // Состояние лексера для определения типа минуса
 // 0 - Начало выражения / после оператора/LPAREN/ASSIGN (ожидаем операнд или унарный минус)
@@ -25,7 +26,6 @@ USERVAR  \$[a-zA-Z_][a-zA-Z0-9_]*
 %%
 
 <INITIAL>{
-"LET"   { lexer_state = 0; return LET; }    /* переменная */
 "PRINT" { lexer_state = 0; return PRINT; }  /* print */
 
 {VARNAME}   {
@@ -70,9 +70,13 @@ USERVAR  \$[a-zA-Z_][a-zA-Z0-9_]*
 "//".*   { }
 
 .       {
-            char msg[256];
-            snprintf(msg, sizeof(msg), "[Lexical error]: Одно кольцо чтобы править всеми... Токен '%s' Мордора не пройдёт", yytext);
-            yyerror(msg);
-        }
+                  char msg[256];
+                  snprintf(msg, sizeof(msg), "[Lexical error]: One ring to rule them all... The '%s' token Mordor will not pass", yytext);
+                  yyerror(msg);
+                  g_was_lexical_error = true;
+                  return LEXICAL_ERROR;
+              }
+
+        
 }
 %%

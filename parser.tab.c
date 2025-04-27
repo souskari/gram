@@ -88,9 +88,10 @@ std::map<std::string, Polynomial> symbolTable;
 void printPolynomial(const Polynomial& p);
 
 Polynomial getVariableValue(const std::string& name);
+bool g_was_lexical_error = false;
 
 
-#line 94 "parser.tab.c"
+#line 95 "parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -124,28 +125,27 @@ enum yysymbol_kind_t
   YYSYMBOL_NUMBER = 3,                     /* NUMBER  */
   YYSYMBOL_VARIABLE = 4,                   /* VARIABLE  */
   YYSYMBOL_USER_VARIABLE = 5,              /* USER_VARIABLE  */
-  YYSYMBOL_LET = 6,                        /* LET  */
-  YYSYMBOL_PRINT = 7,                      /* PRINT  */
-  YYSYMBOL_ADD = 8,                        /* ADD  */
-  YYSYMBOL_SUB = 9,                        /* SUB  */
-  YYSYMBOL_MUL = 10,                       /* MUL  */
-  YYSYMBOL_POW = 11,                       /* POW  */
-  YYSYMBOL_ASSIGN = 12,                    /* ASSIGN  */
-  YYSYMBOL_LPAREN = 13,                    /* LPAREN  */
-  YYSYMBOL_RPAREN = 14,                    /* RPAREN  */
-  YYSYMBOL_SEMICOLON = 15,                 /* SEMICOLON  */
-  YYSYMBOL_UNARY_MINUS = 16,               /* UNARY_MINUS  */
+  YYSYMBOL_PRINT = 6,                      /* PRINT  */
+  YYSYMBOL_ADD = 7,                        /* ADD  */
+  YYSYMBOL_SUB = 8,                        /* SUB  */
+  YYSYMBOL_MUL = 9,                        /* MUL  */
+  YYSYMBOL_POW = 10,                       /* POW  */
+  YYSYMBOL_ASSIGN = 11,                    /* ASSIGN  */
+  YYSYMBOL_LPAREN = 12,                    /* LPAREN  */
+  YYSYMBOL_RPAREN = 13,                    /* RPAREN  */
+  YYSYMBOL_SEMICOLON = 14,                 /* SEMICOLON  */
+  YYSYMBOL_UNARY_MINUS = 15,               /* UNARY_MINUS  */
+  YYSYMBOL_LEXICAL_ERROR = 16,             /* LEXICAL_ERROR  */
   YYSYMBOL_IMPLICIT_MUL = 17,              /* IMPLICIT_MUL  */
   YYSYMBOL_YYACCEPT = 18,                  /* $accept  */
   YYSYMBOL_program = 19,                   /* program  */
   YYSYMBOL_statement_list = 20,            /* statement_list  */
   YYSYMBOL_statement = 21,                 /* statement  */
-  YYSYMBOL_assignment_statement = 22,      /* assignment_statement  */
-  YYSYMBOL_print_statement = 23,           /* print_statement  */
-  YYSYMBOL_expression = 24,                /* expression  */
-  YYSYMBOL_term = 25,                      /* term  */
-  YYSYMBOL_factor = 26,                    /* factor  */
-  YYSYMBOL_primary = 27                    /* primary  */
+  YYSYMBOL_print_statement = 22,           /* print_statement  */
+  YYSYMBOL_expression = 23,                /* expression  */
+  YYSYMBOL_term = 24,                      /* term  */
+  YYSYMBOL_factor = 25,                    /* factor  */
+  YYSYMBOL_primary = 26                    /* primary  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -471,18 +471,18 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  23
+#define YYFINAL  19
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   56
+#define YYLAST   44
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  18
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  10
+#define YYNNTS  9
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  24
+#define YYNRULES  22
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  40
+#define YYNSTATES  36
 
 /* YYMAXUTOK -- Last valid token kind.  */
 #define YYMAXUTOK   272
@@ -533,9 +533,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    49,    49,    51,    55,    56,    60,    61,    62,    63,
-      67,    87,    92,    93,    94,    98,    99,   100,   104,   105,
-     138,   142,   143,   144,   145
+       0,    48,    48,    50,    54,    55,    59,    60,    68,    72,
+      77,    78,    79,    83,    84,    85,    89,    90,   127,   131,
+     132,   133,   134
 };
 #endif
 
@@ -552,11 +552,10 @@ static const char *yysymbol_name (yysymbol_kind_t yysymbol) YY_ATTRIBUTE_UNUSED;
 static const char *const yytname[] =
 {
   "\"end of file\"", "error", "\"invalid token\"", "NUMBER", "VARIABLE",
-  "USER_VARIABLE", "LET", "PRINT", "ADD", "SUB", "MUL", "POW", "ASSIGN",
-  "LPAREN", "RPAREN", "SEMICOLON", "UNARY_MINUS", "IMPLICIT_MUL",
-  "$accept", "program", "statement_list", "statement",
-  "assignment_statement", "print_statement", "expression", "term",
-  "factor", "primary", YY_NULLPTR
+  "USER_VARIABLE", "PRINT", "ADD", "SUB", "MUL", "POW", "ASSIGN", "LPAREN",
+  "RPAREN", "SEMICOLON", "UNARY_MINUS", "LEXICAL_ERROR", "IMPLICIT_MUL",
+  "$accept", "program", "statement_list", "statement", "print_statement",
+  "expression", "term", "factor", "primary", YY_NULLPTR
 };
 
 static const char *
@@ -580,10 +579,10 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-       5,   -14,   -15,   -15,   -15,    -1,    35,    35,    35,    19,
-      30,   -15,    37,    38,    41,    10,   -15,    14,   -15,    20,
-       8,    33,   -15,   -15,   -15,   -15,   -15,    35,    35,   -15,
-      35,   -15,    35,    35,   -15,    10,    10,   -15,   -15,     8
+      25,   -13,    -2,    17,    27,    33,   -15,    14,   -15,    17,
+     -15,   -15,   -15,    17,    17,    16,     2,   -15,     6,   -15,
+     -15,   -15,    -4,    28,   -15,    17,    17,    17,   -15,    17,
+     -15,   -15,     2,     2,   -15,   -15
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -591,22 +590,22 @@ static const yytype_int8 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       0,     0,    21,    22,    23,     0,     0,     0,     0,     0,
-       0,     4,     0,     0,     0,    12,    15,    18,     9,     0,
-      11,     0,    20,     1,     5,     6,     7,     0,     0,     8,
-       0,    17,     0,     0,    24,    13,    14,    16,    19,    10
+       0,     0,     0,     0,     0,     0,     4,     0,     8,     0,
+      19,    20,    21,     0,     0,     9,    10,    13,    16,     1,
+       5,     6,     0,     0,    18,     0,     0,     0,    15,     0,
+       7,    22,    11,    12,    14,    17
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -15,   -15,   -15,    44,   -15,   -15,    -4,    17,    -8,   -15
+     -15,   -15,   -15,    32,   -15,    -1,    18,   -14,   -15
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-       0,     9,    10,    11,    12,    13,    14,    15,    16,    17
+       0,     4,     5,     6,     7,    15,    16,    17,    18
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -614,48 +613,46 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-      22,    18,    20,    21,    19,    -2,     1,    31,     2,     3,
-       4,     5,     6,     2,     3,     4,    27,    28,     7,    23,
-      30,     8,    37,     7,    38,    32,     8,    31,    31,    39,
-      -3,     1,    33,     2,     3,     4,     5,     6,     2,     3,
-       4,    27,    28,     7,    35,    36,     8,    34,     7,    27,
-      28,     8,    25,    26,    24,     0,    29
+      24,     8,    28,    25,    26,    10,    11,    12,    22,     9,
+      30,    27,    23,    34,    13,    35,    29,    14,    28,    28,
+      10,    11,    12,    25,    26,    -2,     1,    19,    21,    13,
+       2,     3,    14,    -3,     1,    25,    26,    20,     2,     3,
+       0,    31,     0,    32,    33
 };
 
 static const yytype_int8 yycheck[] =
 {
-       8,    15,     6,     7,     5,     0,     1,    15,     3,     4,
-       5,     6,     7,     3,     4,     5,     8,     9,    13,     0,
-      10,    16,    30,    13,    32,    11,    16,    35,    36,    33,
-       0,     1,    12,     3,     4,     5,     6,     7,     3,     4,
-       5,     8,     9,    13,    27,    28,    16,    14,    13,     8,
-       9,    16,    15,    15,    10,    -1,    15
+      14,    14,    16,     7,     8,     3,     4,     5,     9,    11,
+      14,     9,    13,    27,    12,    29,    10,    15,    32,    33,
+       3,     4,     5,     7,     8,     0,     1,     0,    14,    12,
+       5,     6,    15,     0,     1,     7,     8,     5,     5,     6,
+      -1,    13,    -1,    25,    26
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,     1,     3,     4,     5,     6,     7,    13,    16,    19,
-      20,    21,    22,    23,    24,    25,    26,    27,    15,     5,
-      24,    24,    26,     0,    21,    15,    15,     8,     9,    15,
-      10,    26,    11,    12,    14,    25,    25,    26,    26,    24
+       0,     1,     5,     6,    19,    20,    21,    22,    14,    11,
+       3,     4,     5,    12,    15,    23,    24,    25,    26,     0,
+      21,    14,    23,    23,    25,     7,     8,     9,    25,    10,
+      14,    13,    24,    24,    25,    25
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    18,    19,    19,    20,    20,    21,    21,    21,    21,
-      22,    23,    24,    24,    24,    25,    25,    25,    26,    26,
-      26,    27,    27,    27,    27
+       0,    18,    19,    19,    20,    20,    21,    21,    21,    22,
+      23,    23,    23,    24,    24,    24,    25,    25,    25,    26,
+      26,    26,    26
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     0,     1,     1,     2,     2,     2,     2,     2,
-       4,     2,     1,     3,     3,     1,     3,     2,     1,     3,
-       2,     1,     1,     1,     3
+       0,     2,     0,     1,     1,     2,     2,     4,     2,     2,
+       1,     3,     3,     1,     3,     2,     1,     3,     2,     1,
+       1,     1,     3
 };
 
 
@@ -1118,106 +1115,89 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-  case 6: /* statement: assignment_statement SEMICOLON  */
+  case 6: /* statement: print_statement SEMICOLON  */
+#line 59 "parser.y"
+                               { g_was_lexical_error = false; }
+#line 1122 "parser.tab.c"
+    break;
+
+  case 7: /* statement: USER_VARIABLE ASSIGN expression SEMICOLON  */
 #line 60 "parser.y"
-                                   { }
-#line 1125 "parser.tab.c"
-    break;
-
-  case 7: /* statement: print_statement SEMICOLON  */
-#line 61 "parser.y"
-                                 { }
-#line 1131 "parser.tab.c"
-    break;
-
-  case 8: /* statement: expression SEMICOLON  */
-#line 62 "parser.y"
-                                 { printPolynomial(*(yyvsp[-1].poly)); delete (yyvsp[-1].poly); }
-#line 1137 "parser.tab.c"
-    break;
-
-  case 9: /* statement: error SEMICOLON  */
-#line 63 "parser.y"
-                                 { yyerrok; }
-#line 1143 "parser.tab.c"
-    break;
-
-  case 10: /* assignment_statement: LET USER_VARIABLE ASSIGN expression  */
-#line 67 "parser.y"
-                                        {
-
-        /* LET $имя = значение;.
-
-        $1: Токен LET
-
-        $2: Токен USER_VARIABLE - имя переменной
-
-        $3: Токен ASSIGN (=)
-
-        $4: Нетерминал expression - результат вычисления полинома */
-
-        symbolTable[*(yyvsp[-2].sval)] = *(yyvsp[0].poly);
-        std::cout << "$" << *(yyvsp[-2].sval) << " = "; // Печать имени переменной
-        printPolynomial(symbolTable[*(yyvsp[-2].sval)]); // Печать результата
-        delete (yyvsp[-2].sval);
+                                              {
+        // Действие для присваивания: $1=USER_VARIABLE(sval*), $3=expression(poly*)
+        symbolTable[*(yyvsp[-3].sval)] = *(yyvsp[-1].poly);
+        //std::cout << "$" << *$1 << " = " << *$3 << std::endl;
+        delete (yyvsp[-3].sval);
+        delete (yyvsp[-1].poly);
+        g_was_lexical_error = false;
     }
+#line 1135 "parser.tab.c"
+    break;
+
+  case 8: /* statement: error SEMICOLON  */
+#line 68 "parser.y"
+                                 { yyerrok; }
+#line 1141 "parser.tab.c"
+    break;
+
+  case 9: /* print_statement: PRINT expression  */
+#line 72 "parser.y"
+                     { printPolynomial(*(yyvsp[0].poly)); delete (yyvsp[0].poly); }
+#line 1147 "parser.tab.c"
+    break;
+
+  case 11: /* expression: expression ADD term  */
+#line 78 "parser.y"
+                                   { (yyval.poly) = new Polynomial(*(yyvsp[-2].poly) + *(yyvsp[0].poly)); delete (yyvsp[-2].poly); delete (yyvsp[0].poly); }
+#line 1153 "parser.tab.c"
+    break;
+
+  case 12: /* expression: expression SUB term  */
+#line 79 "parser.y"
+                                   { (yyval.poly) = new Polynomial(*(yyvsp[-2].poly) - *(yyvsp[0].poly)); delete (yyvsp[-2].poly); delete (yyvsp[0].poly); }
+#line 1159 "parser.tab.c"
+    break;
+
+  case 14: /* term: term MUL factor  */
+#line 84 "parser.y"
+                                   { (yyval.poly) = new Polynomial(*(yyvsp[-2].poly) * *(yyvsp[0].poly)); delete (yyvsp[-2].poly); delete (yyvsp[0].poly); }
 #line 1165 "parser.tab.c"
     break;
 
-  case 11: /* print_statement: PRINT expression  */
-#line 87 "parser.y"
-                     { printPolynomial(*(yyvsp[0].poly)); delete (yyvsp[0].poly); }
+  case 15: /* term: term factor  */
+#line 85 "parser.y"
+                                   { (yyval.poly) = new Polynomial(*(yyvsp[-1].poly) * *(yyvsp[0].poly)); delete (yyvsp[-1].poly); delete (yyvsp[0].poly); }
 #line 1171 "parser.tab.c"
     break;
 
-  case 13: /* expression: expression ADD term  */
-#line 93 "parser.y"
-                                   { (yyval.poly) = new Polynomial(*(yyvsp[-2].poly) + *(yyvsp[0].poly)); delete (yyvsp[-2].poly); delete (yyvsp[0].poly); }
-#line 1177 "parser.tab.c"
-    break;
-
-  case 14: /* expression: expression SUB term  */
-#line 94 "parser.y"
-                                   { (yyval.poly) = new Polynomial(*(yyvsp[-2].poly) - *(yyvsp[0].poly)); delete (yyvsp[-2].poly); delete (yyvsp[0].poly); }
-#line 1183 "parser.tab.c"
-    break;
-
-  case 16: /* term: term MUL factor  */
-#line 99 "parser.y"
-                                   { (yyval.poly) = new Polynomial(*(yyvsp[-2].poly) * *(yyvsp[0].poly)); delete (yyvsp[-2].poly); delete (yyvsp[0].poly); }
-#line 1189 "parser.tab.c"
-    break;
-
-  case 17: /* term: term factor  */
-#line 100 "parser.y"
-                                   { (yyval.poly) = new Polynomial(*(yyvsp[-1].poly) * *(yyvsp[0].poly)); delete (yyvsp[-1].poly); delete (yyvsp[0].poly); }
-#line 1195 "parser.tab.c"
-    break;
-
-  case 19: /* factor: primary POW factor  */
-#line 105 "parser.y"
+  case 17: /* factor: primary POW factor  */
+#line 90 "parser.y"
                          {
-                            // $1 - primary (база, Polynomial*)
-                            // $3 - factor (показатель степени, Polynomial*)
+                            // $1 - base (Polynomial*)
+                            // $3 - exponent (Polynomial*)
 
-                            if ((yyvsp[0].poly)->terms.size() != 1 || !(yyvsp[0].poly)->terms.count(Monom())) {
-                                yyerror("[Semantic error]: Даже орк из Мордора знает, что степень должна быть числом");
+                            double exp_val = 0.0;
+
+                            if ((yyvsp[0].poly)->terms.empty()) {
+                                exp_val = 0.0;
+                            } else if ((yyvsp[0].poly)->terms.size() == 1 && (yyvsp[0].poly)->terms.count(Monom())) {
+                                exp_val = (yyvsp[0].poly)->terms.at(Monom());
+                            } else {
+                                yyerror("[Semantic error]: Even an orc from Mordor knows that the degree must be a number.");
                                 delete (yyvsp[-2].poly); delete (yyvsp[0].poly);
                                 YYERROR;
                             }
 
-                            double exp_val = (yyvsp[0].poly)->terms.at(Monom());
 
                             const double EXP_EPSILON = 1e-9;
-
                             if (exp_val < -EXP_EPSILON) {
-                                yyerror("[Semantic error]: На спидометре минус? Так гонку не выиграть");
+                                yyerror("[Semantic error]: Is it minus on the speedometer? You can't win the race that way.");
                                 delete (yyvsp[-2].poly); delete (yyvsp[0].poly);
                                 YYERROR;
                             }
 
                             if (std::fabs(exp_val - std::round(exp_val)) > EXP_EPSILON) {
-                                yyerror("[Semantic error]: Нельзя поднять полтора паруса! Степень должна быть целой");
+                                yyerror("[Semantic error]: You can't raise a sail and a half! The degree must be an integer");
                                 delete (yyvsp[-2].poly); delete (yyvsp[0].poly);
                                 YYERROR;
                             }
@@ -1229,41 +1209,41 @@ yyreduce:
                             delete (yyvsp[-2].poly);
                             delete (yyvsp[0].poly);
                          }
-#line 1233 "parser.tab.c"
+#line 1213 "parser.tab.c"
     break;
 
-  case 20: /* factor: UNARY_MINUS factor  */
-#line 138 "parser.y"
+  case 18: /* factor: UNARY_MINUS factor  */
+#line 127 "parser.y"
                          { (yyval.poly) = new Polynomial(-(*(yyvsp[0].poly))); delete (yyvsp[0].poly); }
-#line 1239 "parser.tab.c"
+#line 1219 "parser.tab.c"
     break;
 
-  case 21: /* primary: NUMBER  */
-#line 142 "parser.y"
+  case 19: /* primary: NUMBER  */
+#line 131 "parser.y"
                                    { (yyval.poly) = (yyvsp[0].poly); }
-#line 1245 "parser.tab.c"
+#line 1225 "parser.tab.c"
     break;
 
-  case 22: /* primary: VARIABLE  */
-#line 143 "parser.y"
+  case 20: /* primary: VARIABLE  */
+#line 132 "parser.y"
                                    { (yyval.poly) = (yyvsp[0].poly); }
-#line 1251 "parser.tab.c"
+#line 1231 "parser.tab.c"
     break;
 
-  case 23: /* primary: USER_VARIABLE  */
-#line 144 "parser.y"
+  case 21: /* primary: USER_VARIABLE  */
+#line 133 "parser.y"
                                    { (yyval.poly) = new Polynomial(getVariableValue(*(yyvsp[0].sval))); delete (yyvsp[0].sval); }
-#line 1257 "parser.tab.c"
+#line 1237 "parser.tab.c"
     break;
 
-  case 24: /* primary: LPAREN expression RPAREN  */
-#line 145 "parser.y"
+  case 22: /* primary: LPAREN expression RPAREN  */
+#line 134 "parser.y"
                                    { (yyval.poly) = (yyvsp[-1].poly); }
-#line 1263 "parser.tab.c"
+#line 1243 "parser.tab.c"
     break;
 
 
-#line 1267 "parser.tab.c"
+#line 1247 "parser.tab.c"
 
       default: break;
     }
@@ -1456,20 +1436,21 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 148 "parser.y"
+#line 137 "parser.y"
 
 
 #include <cstdio>
+#include <cstring>
 
 void printPolynomial(const Polynomial& p) {
-    std::cout << "Result: " << p << std::endl;
+    std::cout << p << std::endl;
 }
 
 // Функция получения значения переменной из таблицы символов
 Polynomial getVariableValue(const std::string& name) {
     if (symbolTable.find(name) == symbolTable.end()) {
         char msg[256];
-        snprintf(msg, sizeof(msg), "[Semantic error]: $%s? Капитан Джек одобряет ром, золото и пистолеты, но не эту переменную", name.c_str());
+        snprintf(msg, sizeof(msg), "[Semantic error]: $%s? Captain Jack approves of rum, gold, and pistols, but not this variable.", name.c_str());
         yyerror(msg);
         return Polynomial();
     }
@@ -1477,7 +1458,12 @@ Polynomial getVariableValue(const std::string& name) {
 }
 
 void yyerror(const char *s) {
-    fprintf(stderr, "[Error in line] %d: %s\n", yylineno, s);
-    if (yytext && *yytext) { // Проверяем, что yytext не пуст
+    fprintf(stderr, "[Error in line] %d: %s", yylineno, s);
+
+    if (s && strcmp(s, "syntax error") == 0 && !g_was_lexical_error) {
+          fprintf(stderr, ": Skipped ';' at the end of the line %d or an error in the structure of the expression next to '%s'\n", yylineno,
+                  yytext ? yytext : "<unknown token>");
+    } else {
+        fprintf(stderr, "\n");
     }
 }

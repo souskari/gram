@@ -18,6 +18,7 @@ std::map<std::string, Polynomial> symbolTable;
 void printPolynomial(const Polynomial& p);
 
 Polynomial getVariableValue(const std::string& name);
+bool g_was_lexical_error = false;
 
 %}
 
@@ -30,9 +31,7 @@ Polynomial getVariableValue(const std::string& name);
 /* Токены */
 %token <poly> NUMBER VARIABLE
 %token <sval> USER_VARIABLE
-%token LET PRINT
-%token ADD SUB MUL POW ASSIGN LPAREN RPAREN SEMICOLON
-%token UNARY_MINUS
+%token PRINT ADD SUB MUL POW ASSIGN LPAREN RPAREN SEMICOLON UNARY_MINUS LEXICAL_ERROR
 
 %type <poly> expression term factor primary
 
@@ -57,30 +56,16 @@ statement_list:
   ;
 
 statement:
-    assignment_statement SEMICOLON { } // (LET ... = ...)
-  | print_statement SEMICOLON    { } // (PRINT ...)
-  | expression SEMICOLON         { printPolynomial(*$1); delete $1; } // просто выражение вида x+y*2 с ;
-  | error SEMICOLON              { yyerrok; }
-  ;
-
-assignment_statement:
-    LET USER_VARIABLE ASSIGN expression {
-
-        /* LET $имя = значение;.
-
-        $1: Токен LET
-
-        $2: Токен USER_VARIABLE - имя переменной
-
-        $3: Токен ASSIGN (=)
-
-        $4: Нетерминал expression - результат вычисления полинома */
-
-        symbolTable[*$2] = *$4;
-        std::cout << "$" << *$2 << " = "; // Печать имени переменной
-        printPolynomial(symbolTable[*$2]); // Печать результата
-        delete $2;
+  print_statement SEMICOLON    { g_was_lexical_error = false; } // (PRINT ...)
+  | USER_VARIABLE ASSIGN expression SEMICOLON {
+        // Действие для присваивания: $1=USER_VARIABLE(sval*), $3=expression(poly*)
+        symbolTable[*$1] = *$3;
+        //std::cout << "$" << *$1 << " = " << *$3 << std::endl;
+        delete $1;
+        delete $3;
+        g_was_lexical_error = false;
     }
+  | error SEMICOLON              { yyerrok; }
   ;
 
 print_statement:
@@ -103,27 +88,31 @@ term:
 factor:
     primary
   | primary POW factor   {
-                            // $1 - primary (база, Polynomial*)
-                            // $3 - factor (показатель степени, Polynomial*)
+                            // $1 - base (Polynomial*)
+                            // $3 - exponent (Polynomial*)
 
-                            if ($3->terms.size() != 1 || !$3->terms.count(Monom())) {
-                                yyerror("[Semantic error]: Даже орк из Мордора знает, что степень должна быть числом");
+                            double exp_val = 0.0;
+
+                            if ($3->terms.empty()) {
+                                exp_val = 0.0;
+                            } else if ($3->terms.size() == 1 && $3->terms.count(Monom())) {
+                                exp_val = $3->terms.at(Monom());
+                            } else {
+                                yyerror("[Semantic error]: Even an orc from Mordor knows that the degree must be a number.");
                                 delete $1; delete $3;
                                 YYERROR;
                             }
 
-                            double exp_val = $3->terms.at(Monom());
 
                             const double EXP_EPSILON = 1e-9;
-
                             if (exp_val < -EXP_EPSILON) {
-                                yyerror("[Semantic error]: На спидометре минус? Так гонку не выиграть");
+                                yyerror("[Semantic error]: Is it minus on the speedometer? You can't win the race that way.");
                                 delete $1; delete $3;
                                 YYERROR;
                             }
 
                             if (std::fabs(exp_val - std::round(exp_val)) > EXP_EPSILON) {
-                                yyerror("[Semantic error]: Нельзя поднять полтора паруса! Степень должна быть целой");
+                                yyerror("[Semantic error]: You can't raise a sail and a half! The degree must be an integer");
                                 delete $1; delete $3;
                                 YYERROR;
                             }
@@ -148,16 +137,17 @@ primary:
 %%
 
 #include <cstdio>
+#include <cstring>
 
 void printPolynomial(const Polynomial& p) {
-    std::cout << "Result: " << p << std::endl;
+    std::cout << p << std::endl;
 }
 
 // Функция получения значения переменной из таблицы символов
 Polynomial getVariableValue(const std::string& name) {
     if (symbolTable.find(name) == symbolTable.end()) {
         char msg[256];
-        snprintf(msg, sizeof(msg), "[Semantic error]: $%s? Капитан Джек одобряет ром, золото и пистолеты, но не эту переменную", name.c_str());
+        snprintf(msg, sizeof(msg), "[Semantic error]: $%s? Captain Jack approves of rum, gold, and pistols, but not this variable.", name.c_str());
         yyerror(msg);
         return Polynomial();
     }
@@ -165,7 +155,12 @@ Polynomial getVariableValue(const std::string& name) {
 }
 
 void yyerror(const char *s) {
-    fprintf(stderr, "[Error in line] %d: %s\n", yylineno, s);
-    if (yytext && *yytext) { // Проверяем, что yytext не пуст
+    fprintf(stderr, "[Error in line] %d: %s", yylineno, s);
+
+    if (s && strcmp(s, "syntax error") == 0 && !g_was_lexical_error) {
+          fprintf(stderr, ": Skipped ';' at the end of the line %d or an error in the structure of the expression next to '%s'\n", yylineno,
+                  yytext ? yytext : "<unknown token>");
+    } else {
+        fprintf(stderr, "\n");
     }
 }

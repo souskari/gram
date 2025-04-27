@@ -17,14 +17,31 @@ int totalDegree(const Monom& m) {
     return degree;
 }
 
+int maxDegreeInMonom(const Monom& m) {
+    if (m.empty()) {
+        return 0;
+    }
+    auto max_it = std::max_element(m.begin(), m.end(),
+        [](const std::pair<char, int>& a, const std::pair<char, int>& b) {
+            return a.second < b.second;
+        });
+    return max_it->second;
+}
+
 bool compareMonoms(const std::pair<Monom, double>& a, const std::pair<Monom, double>& b) {
     int degreeA = totalDegree(a.first);
     int degreeB = totalDegree(b.first);
     if (degreeA != degreeB) {
-        return degreeA > degreeB; // Сначала термы с большей степенью
+        return degreeA > degreeB;
     }
-    // Если степени равны, сравниваем лексикографически по переменным
-    return a.first < b.first; 
+
+    int maxDegreeA = maxDegreeInMonom(a.first);
+    int maxDegreeB = maxDegreeInMonom(b.first);
+    if (maxDegreeA != maxDegreeB) {
+        return maxDegreeA > maxDegreeB;
+    }
+
+    return a.first < b.first;
 }
 
 // --- Конструкторы ---
@@ -158,7 +175,7 @@ Polynomial Polynomial::operator*(const Polynomial& other) const {
 
              if (std::fabs(new_coeff) > EPSILON) {
                 result.terms[new_monom] += new_coeff;
-                // std::cerr << "    Intermediate add to result: term " << Polynomial::MonomToString(new_monom) // Нужна вспомогательная функция MonomToString
+                // std::cerr << "    Intermediate add to result: term " << Polynomial::MonomToString(new_monom)
                 //           << " with coeff " << result.terms[new_monom] << "\n";
                 // ----------------------------------------------------------------------
              }
@@ -172,7 +189,6 @@ Polynomial Polynomial::operator*(const Polynomial& other) const {
 
 Polynomial Polynomial::power(int exponent) const {
     if (exponent < 0) {
-        std::cerr << "[WARNING] Ты пытаешься возвести число в отрицательную степень… Но не надо. Не существует такого уравнения, Нео" << std::endl;
         return Polynomial(); 
     }
     if (exponent == 0) {
